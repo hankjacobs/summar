@@ -1,0 +1,8 @@
+# macOS
+*.DS_Store
+._*
+
+
+# IntelliJ IDEA
+.idea/
+*.iml
