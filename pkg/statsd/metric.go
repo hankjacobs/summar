@@ -1,5 +1,7 @@
 package statsd
 
+import "fmt"
+
 type Type string
 
 const (
@@ -8,6 +10,10 @@ const (
 
 type Metric struct {
 	Name  string
-	Value string
+	Value int64
 	Type  Type
+}
+
+func (m Metric) String() string {
+	return fmt.Sprintf("%s:%d|%s", m.Name, m.Value, string(m.Type))
 }
