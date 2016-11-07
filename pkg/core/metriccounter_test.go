@@ -10,10 +10,10 @@ import (
 
 func TestReset(t *testing.T) {
 	counter := NewMetricCounter()
-	entry200 := nginx.LogEntry{"/test", 200}
-	entry300 := nginx.LogEntry{"/test", 200}
-	entry400 := nginx.LogEntry{"/test", 200}
-	entry500 := nginx.LogEntry{"/test", 200}
+	entry200 := nginx.LogEntry{Route: "/test", StatusCode: 200}
+	entry300 := nginx.LogEntry{Route: "/test", StatusCode: 200}
+	entry400 := nginx.LogEntry{Route: "/test", StatusCode: 200}
+	entry500 := nginx.LogEntry{Route: "/test", StatusCode: 200}
 
 	counter.CountEntry(entry200)
 	counter.CountEntry(entry300)
@@ -52,12 +52,12 @@ func TestReset(t *testing.T) {
 
 func TestCount20xMetric(t *testing.T) {
 	counter := NewMetricCounter()
-	entry := nginx.LogEntry{"/test", 200}
+	entry := nginx.LogEntry{Route: "/test", StatusCode: 200}
 
 	counter.CountEntry(entry)
 	counter.CountEntry(entry)
 
-	expected := statsd.Metric{metric20xName, 2, statsd.Set}
+	expected := statsd.Metric{Name: metric20xName, Value: 2, Type: statsd.Set}
 	got := counter.Entries20xMetric()
 
 	if expected != got {
@@ -67,12 +67,12 @@ func TestCount20xMetric(t *testing.T) {
 
 func TestCount30xMetric(t *testing.T) {
 	counter := NewMetricCounter()
-	entry := nginx.LogEntry{"/test", 300}
+	entry := nginx.LogEntry{Route: "/test", StatusCode: 300}
 
 	counter.CountEntry(entry)
 	counter.CountEntry(entry)
 
-	expected := statsd.Metric{metric30xName, 2, statsd.Set}
+	expected := statsd.Metric{Name: metric30xName, Value: 2, Type: statsd.Set}
 	got := counter.Entries30xMetric()
 
 	if expected != got {
@@ -82,12 +82,12 @@ func TestCount30xMetric(t *testing.T) {
 
 func TestCount40xMetric(t *testing.T) {
 	counter := NewMetricCounter()
-	entry := nginx.LogEntry{"/test", 400}
+	entry := nginx.LogEntry{Route: "/test", StatusCode: 400}
 
 	counter.CountEntry(entry)
 	counter.CountEntry(entry)
 
-	expected := statsd.Metric{metric40xName, 2, statsd.Set}
+	expected := statsd.Metric{Name: metric40xName, Value: 2, Type: statsd.Set}
 	got := counter.Entries40xMetric()
 
 	if expected != got {
@@ -97,12 +97,12 @@ func TestCount40xMetric(t *testing.T) {
 
 func TestCount50xMetric(t *testing.T) {
 	counter := NewMetricCounter()
-	entry := nginx.LogEntry{"/test", 500}
+	entry := nginx.LogEntry{Route: "/test", StatusCode: 500}
 
 	counter.CountEntry(entry)
 	counter.CountEntry(entry)
 
-	expected := statsd.Metric{metric50xName, 2, statsd.Set}
+	expected := statsd.Metric{Name: metric50xName, Value: 2, Type: statsd.Set}
 	got := counter.Entries50xMetric()
 
 	if expected != got {
@@ -112,17 +112,17 @@ func TestCount50xMetric(t *testing.T) {
 
 func TestErrorRoutesMetric(t *testing.T) {
 	counter := NewMetricCounter()
-	entryErrorTestRoute := nginx.LogEntry{"/test", 500}
-	entryErrorOtherRoute := nginx.LogEntry{"/other", 501}
-	entryGoodRoute := nginx.LogEntry{"/good", 200}
+	entryErrorTestRoute := nginx.LogEntry{Route: "/test", StatusCode: 500}
+	entryErrorOtherRoute := nginx.LogEntry{Route: "/other", StatusCode: 501}
+	entryGoodRoute := nginx.LogEntry{Route: "/good", StatusCode: 200}
 
 	counter.CountEntry(entryErrorTestRoute)
 	counter.CountEntry(entryErrorTestRoute)
 	counter.CountEntry(entryErrorOtherRoute)
 	counter.CountEntry(entryGoodRoute)
 
-	errorTestRouteMetric := statsd.Metric{entryErrorTestRoute.Route, 2, statsd.Set}
-	errorOtherRouteMetric := statsd.Metric{entryErrorOtherRoute.Route, 1, statsd.Set}
+	errorTestRouteMetric := statsd.Metric{Name: entryErrorTestRoute.Route, Value: 2, Type: statsd.Set}
+	errorOtherRouteMetric := statsd.Metric{Name: entryErrorOtherRoute.Route, Value: 1, Type: statsd.Set}
 
 	expectedMetrics := []statsd.Metric{errorTestRouteMetric, errorOtherRouteMetric}
 	sort.Sort(metrics(expectedMetrics))
@@ -140,9 +140,9 @@ func TestErrorRoutesMetric(t *testing.T) {
 
 func TestErrorRoutesMetricEquals50xMetrics(t *testing.T) {
 	counter := NewMetricCounter()
-	entryErrorTestRoute := nginx.LogEntry{"/test", 500}
-	entryErrorOtherRoute := nginx.LogEntry{"/other", 501}
-	entryGoodRoute := nginx.LogEntry{"/good", 200}
+	entryErrorTestRoute := nginx.LogEntry{Route: "/test", StatusCode: 500}
+	entryErrorOtherRoute := nginx.LogEntry{Route: "/other", StatusCode: 501}
+	entryGoodRoute := nginx.LogEntry{Route: "/good", StatusCode: 200}
 
 	counter.CountEntry(entryErrorTestRoute)
 	counter.CountEntry(entryErrorTestRoute)
@@ -159,7 +159,7 @@ func TestErrorRoutesMetricEquals50xMetrics(t *testing.T) {
 	entries50xMetric := counter.Entries50xMetric()
 
 	if count != entries50xMetric.Value {
-		t.Fatal("Got %v but expected %v", count, entries50xMetric.Value)
+		t.Fatalf("Got %v but expected %v", count, entries50xMetric.Value)
 	}
 }
 

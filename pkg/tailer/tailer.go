@@ -27,7 +27,7 @@ func NewTailer(filename string) (Tailer, error) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		config.Location = nil
 	} else {
-		config.Location = &tail.SeekInfo{0, os.SEEK_END}
+		config.Location = &tail.SeekInfo{Offset: 0, Whence: os.SEEK_END}
 	}
 
 	impl, err := tail.TailFile(filename, config)

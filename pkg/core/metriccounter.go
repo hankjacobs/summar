@@ -55,22 +55,22 @@ func (c *MetricCounter) CountEntry(entry nginx.LogEntry) {
 
 // Entries20xMetric metric for 20x entries
 func (c *MetricCounter) Entries20xMetric() statsd.Metric {
-	return statsd.Metric{metric20xName, c.entries20x.Count(), statsd.Set}
+	return statsd.Metric{Name: metric20xName, Value: c.entries20x.Count(), Type: statsd.Set}
 }
 
 // Entries30xMetric metric for 30x entries
 func (c *MetricCounter) Entries30xMetric() statsd.Metric {
-	return statsd.Metric{metric30xName, c.entries30x.Count(), statsd.Set}
+	return statsd.Metric{Name: metric30xName, Value: c.entries30x.Count(), Type: statsd.Set}
 }
 
 // Entries40xMetric metric for 40x entries
 func (c *MetricCounter) Entries40xMetric() statsd.Metric {
-	return statsd.Metric{metric40xName, c.entries40x.Count(), statsd.Set}
+	return statsd.Metric{Name: metric40xName, Value: c.entries40x.Count(), Type: statsd.Set}
 }
 
 // Entries50xMetric metric for 50x entries
 func (c *MetricCounter) Entries50xMetric() statsd.Metric {
-	return statsd.Metric{metric50xName, c.entries50x.Count(), statsd.Set}
+	return statsd.Metric{Name: metric50xName, Value: c.entries50x.Count(), Type: statsd.Set}
 }
 
 // ErrorRouteMetrics metrics for routes that had a 50x status code
@@ -78,7 +78,7 @@ func (c *MetricCounter) ErrorRouteMetrics() []statsd.Metric {
 	metrics := []statsd.Metric{}
 
 	for key, value := range c.errorRoutes {
-		m := statsd.Metric{key, value.Count(), statsd.Set}
+		m := statsd.Metric{Name: key, Value: value.Count(), Type: statsd.Set}
 		metrics = append(metrics, m)
 	}
 
