@@ -7,9 +7,11 @@ import (
 )
 
 var (
+	// ErrInvalidLog error returned for invalid log lines
 	ErrInvalidLog = fmt.Errorf("invalid log line")
 )
 
+// ParseLogEntry parses a log entry string into a LogEntry
 func ParseLogEntry(log string) (LogEntry, error) {
 
 	substrs := strings.SplitN(log, `"`, -1)

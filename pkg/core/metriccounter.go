@@ -13,6 +13,8 @@ const (
 	metric50xName = "50x"
 )
 
+// MetricCounter counts the number of log entries with 2xx, 3xx, 4xx,
+// 5xx status codes
 type MetricCounter struct {
 	entries20x acc.Accumulator // 20x entries
 	entries30x acc.Accumulator // 30x entries
@@ -22,10 +24,12 @@ type MetricCounter struct {
 	errorRoutes map[string]acc.Accumulator
 }
 
+// NewMetricCounter creates a new metric counter
 func NewMetricCounter() *MetricCounter {
 	return &MetricCounter{errorRoutes: make(map[string]acc.Accumulator)}
 }
 
+// Reset resets a metric counter to zero state
 func (c *MetricCounter) Reset() {
 	c.entries20x.Reset()
 	c.entries30x.Reset()
@@ -33,6 +37,8 @@ func (c *MetricCounter) Reset() {
 	c.entries50x.Reset()
 	c.errorRoutes = make(map[string]acc.Accumulator)
 }
+
+// CountEntry uses entry to increment appropriate metrics
 func (c *MetricCounter) CountEntry(entry nginx.LogEntry) {
 	switch {
 	case entry.Has20xStatusCode():
@@ -47,22 +53,27 @@ func (c *MetricCounter) CountEntry(entry nginx.LogEntry) {
 	}
 }
 
+// Entries20xMetric metric for 20x entries
 func (c *MetricCounter) Entries20xMetric() statsd.Metric {
 	return statsd.Metric{metric20xName, c.entries20x.Count(), statsd.Set}
 }
 
+// Entries30xMetric metric for 30x entries
 func (c *MetricCounter) Entries30xMetric() statsd.Metric {
 	return statsd.Metric{metric30xName, c.entries30x.Count(), statsd.Set}
 }
 
+// Entries40xMetric metric for 40x entries
 func (c *MetricCounter) Entries40xMetric() statsd.Metric {
 	return statsd.Metric{metric40xName, c.entries40x.Count(), statsd.Set}
 }
 
+// Entries50xMetric metric for 50x entries
 func (c *MetricCounter) Entries50xMetric() statsd.Metric {
 	return statsd.Metric{metric50xName, c.entries50x.Count(), statsd.Set}
 }
 
+// ErrorRouteMetrics metrics for routes that had a 50x status code
 func (c *MetricCounter) ErrorRouteMetrics() []statsd.Metric {
 	metrics := []statsd.Metric{}
 

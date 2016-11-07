@@ -15,6 +15,7 @@ type tailer struct {
 type relayer struct {
 }
 
+// NewTailer creates a new tailer for the specified file
 func NewTailer(filename string) (Tailer, error) {
 	config := tail.Config{Follow: true, ReOpen: true}
 

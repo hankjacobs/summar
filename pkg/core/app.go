@@ -10,17 +10,20 @@ import (
 	"github.com/hpcloud/tail"
 )
 
+// App app
 type App struct {
 	tailer  tailer.Tailer
-	writer  io.WriteCloser
+	writer  io.Writer
 	counter *MetricCounter
 	stop    chan struct{}
 }
 
+// NewApp creates a new app
 func NewApp(tailer tailer.Tailer, writer io.WriteCloser) *App {
 	return &App{tailer, writer, NewMetricCounter(), make(chan struct{})}
 }
 
+// Run runs an app
 func (a *App) Run() {
 	defer func() { a.finish() }()
 
@@ -42,6 +45,7 @@ func (a *App) finish() {
 	_ = a.writer.Close()
 }
 
+// Stop stops an app
 func (a *App) Stop() {
 	close(a.stop)
 }
