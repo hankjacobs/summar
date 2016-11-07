@@ -30,7 +30,3 @@ func (l LogEntry) Has40xStatusCode() bool {
 func (l LogEntry) Has50xStatusCode() bool {
 	return l.StatusCode >= 500 && l.StatusCode <= 599
 }
-
-func (l LogEntry) HasErrorStatusCode() bool {
-	return l.Has50xStatusCode()
-}

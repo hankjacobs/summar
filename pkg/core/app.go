@@ -25,8 +25,6 @@ func NewApp(tailer tailer.Tailer, writer io.WriteCloser) *App {
 
 // Run runs an app
 func (a *App) Run() {
-	defer func() { a.finish() }()
-
 	for {
 		select {
 		case line := <-a.tailer.Lines():
@@ -37,12 +35,6 @@ func (a *App) Run() {
 			return
 		}
 	}
-}
-
-func (a *App) finish() {
-	// TODO Handle these errors
-	_ = a.tailer.Stop()
-	_ = a.writer.Close()
 }
 
 // Stop stops an app

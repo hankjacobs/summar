@@ -81,28 +81,3 @@ func TestHas50xStatusCode(t *testing.T) {
 		}
 	}
 }
-
-func TestHasErrorStatusCode(t *testing.T) {
-	for i := 500; i <= 599; i++ {
-		entry := LogEntry{"/test", i}
-		if !entry.HasErrorStatusCode() {
-			t.Errorf("Entry Status Code (%v) not error when it should be", entry.StatusCode)
-		}
-	}
-
-	for i := 100; i <= 199; i++ {
-		entry := LogEntry{"/test", i}
-		if entry.HasErrorStatusCode() {
-			t.Errorf("Entry Status Code (%v) is error when it should not be", entry.StatusCode)
-		}
-	}
-}
-
-func TestHasErrorStatusCodeEquals50xStatusCode(t *testing.T) {
-	for i := 500; i <= 599; i++ {
-		entry := LogEntry{"/test", i}
-		if entry.HasErrorStatusCode() != entry.Has50xStatusCode() {
-			t.Errorf("Entry Status Code (%v) is not both error and 50x status code when it should be", entry.StatusCode)
-		}
-	}
-}
