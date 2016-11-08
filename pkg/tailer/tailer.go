@@ -6,6 +6,26 @@ import (
 	"github.com/hpcloud/tail"
 )
 
+type logger interface {
+	Fatal(v ...interface{})
+	Fatalf(format string, v ...interface{})
+	Fatalln(v ...interface{})
+	Panic(v ...interface{})
+	Panicf(format string, v ...interface{})
+	Panicln(v ...interface{})
+	Print(v ...interface{})
+	Printf(format string, v ...interface{})
+	Println(v ...interface{})
+}
+
+// Tailer is used to tail a file
+type Tailer interface {
+	// ideally, we would use an interface instead of *tail.Line
+	// but casting between chan types isn't possible
+	Lines() chan *tail.Line
+	Stop() error
+}
+
 var _ Tailer = &tailer{}
 
 type tailer struct {
@@ -13,8 +33,8 @@ type tailer struct {
 }
 
 // NewTailer creates a new tailer for the specified file
-func NewTailer(filename string) (Tailer, error) {
-	config := tail.Config{Follow: true, ReOpen: true}
+func NewTailer(filename string, logger logger) (Tailer, error) {
+	config := tail.Config{Follow: true, ReOpen: true, Logger: logger}
 
 	// Only use location if the file already exists.
 	// If we use location, and the file does not exist,
@@ -41,5 +61,5 @@ func (t *tailer) Lines() chan *tail.Line {
 }
 
 func (t *tailer) Stop() error {
-	return nil
+	return t.impl.Stop()
 }
