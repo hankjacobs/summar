@@ -99,14 +99,23 @@ func NewApp(config Config) (*App, error) {
 
 // Run runs an app
 func (a *App) Run() {
+	ticker := time.NewTicker(a.flushInterval)
+
 	for {
 		select {
 		case line := <-a.tailer.Lines():
-			a.handleLine(line)
-		case <-time.After(a.flushInterval):
+			a.logger.Printf("Line channel received")
+			if line != nil {
+				a.handleLine(line)
+			} else {
+				a.logger.Printf("No line present")
+			}
+		case <-ticker.C:
+			a.logger.Printf("Flush timer fired")
 			a.writeCounts()
 		case <-a.stop:
 			close(a.done)
+			ticker.Stop()
 			return
 		}
 	}

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path"
 
 	"github.com/hankjacobs/summar/pkg/core"
 	"github.com/hankjacobs/summar/pkg/statsd"
@@ -23,6 +24,11 @@ func main() {
 		logger = core.DefaultLogger
 	}
 
+	parentDir := path.Dir(*in)
+	if _, err := os.Stat(parentDir); os.IsNotExist(err) {
+		log.Fatalf("Parent directory does not exist for specified file %s", *in)
+	}
+
 	tailer, tailErr := tailer.NewTailer(*in, logger)
 	if tailErr != nil {
 		log.Fatalf("Could not open %v", *in)
@@ -32,6 +38,7 @@ func main() {
 	if fileERr != nil {
 		log.Fatalf("Could not open %v", *out)
 	}
+
 	writer := statsd.NewIOMessageWriter(file)
 
 	config := core.Config{Tailer: tailer, Writer: writer, FlushInterval: core.DefaultFlushInterval, Logger: logger}
