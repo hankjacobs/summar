@@ -33,19 +33,24 @@ $GOPATH/bin/summar -in access.log -out stats.log
 then start tail in another terminal:
 
 ```
-tail -f stats.log
+cd $GOPATH/src/github.com/hankjacobs/summar && tail -f stats.log
 ```
 
 and copy the test data line by line into access.log:
 
 ```
-while read line; do echo $line >> access.log; done < testdata/sample50x.log
+cd $GOPATH/src/github.com/hankjacobs/summar && while read line; do echo $line >> access.log; done < testdata/sample50x.log
 ```
 ### Docker
 
 Docker is used to simulate a nginx web server serving real traffic.
 
 The docker image sets up nginx with routes that produce 200, 300, 400, and 500 response status codes. A request generator is configured to randomly invoke those paths every 10 milliseconds. Summar is then used to summarize `/var/log/nginx/access.log` into `/var/log/stats.log`. `tail -f /var/log/stats.log` is used to tail the metrics so that they are visible to a console that is running the docker image in foreground mode.
+
+First, switch to the summar src directory (if not already there):
+```
+cd $GOPATH/src/github.com/hankjacobs/summar
+```
 
 Build the docker image using:
 ```
